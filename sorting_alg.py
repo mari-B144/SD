@@ -3,23 +3,24 @@
 def bubble_sort(vector):
     n = len(vector)
     for i in range(n-1):
-      ok = False
-      for j in range(n-i-1):
-        if vector[j] > vector[j + 1]:
-          vector[j], vector[j + 1] = vector[j + 1], vector[j]
-          ok = True
-      if not ok:
-        break
-    
+        ok = False
+        for j in range(n - i - 1):
+            if vector[j] > vector[j+1]:
+                vector[j], vector[j+1] = vector[j+1], vector[j]
+                ok = True
+        if not ok:
+            break
+
     return vector
 
-#merge - O(nlogn)
+
+#merge - O(nlogn) - imp vectorul, sorteaza recursiv subvectorii si ii interclaseaza la fin
 
 def merge_sort(vector):
     if len(vector) <= 1:
         return vector
 
-    mij = len(vector) // 2
+    mij = len(vector)//2
     st = merge_sort(vector[:mij])
     dr = merge_sort(vector[mij:])
 
@@ -44,13 +45,13 @@ def interclasare(st, dr):
     return rezultat
 
 
-#quick - O(nlogn)
+#quick - O(nlogn) in mediu worst case avem O(n*n) - aleg un pivot, imp vectorul in functie de el si apoi sortez recursiv subvectorii rezultanti
 
 def quick_sort(vector):
     if len(vector) <= 1:
         return vector
 
-    pivot = vector[len(vector) // 2]
+    pivot = vector[len(vector)//2]  #puteam si pivot = random.choice(vector) care are tot O(nlogn)
     st = []
     mij = []
     dr = []
@@ -64,7 +65,8 @@ def quick_sort(vector):
 
     return quick_sort(st) + mij + quick_sort(dr)
 
-#heap - O(nlogn)
+
+#heap - O(nlogn) - constr un heap, ia elem max si il pune la finalul vectorului repetat
 
 def heapify(vector, n, i):
     maxim = i
@@ -85,33 +87,33 @@ def heapify(vector, n, i):
 def heap_sort(vector):
     n = len(vector)
 
-    for i in range(n//2-1, -1, -1):
+    for i in range(n // 2 - 1, -1, -1):
         heapify(vector, n, i)
 
     for i in range(n - 1, 0, -1):
-        vector[i], vector[0] = vector[0], vector[i] #mut elem maxim la capatul vectorului
-        heapify(vector, i, 0) #reconstruiesc heap ul pt restul elem
+        vector[i], vector[0] = vector[0], vector[i]  #mut elem maxim la capatul vectorului
+        heapify(vector, i, 0)  #reconstruiesc heap ul pt restul elem
 
     return vector
 
 
-#radix - O(n*k) unde k nr de cifre al nr max
+#radix - O(n*k) unde k nr de cifre al nr max , numai pt nr poz
 
 def counting_sort(v, exp):
     n = len(v)
-    rez = [0]*n
-    frecv = [0]*10
+    rez = [0] * n
+    frecv = [0] * 10
 
     for i in range(n):
-        index = (v[i]//exp)%10
-        frecv[index] += 1 #pana la i sunt frecv[i] elem
+        index = (v[i] // exp) % 10
+        frecv[index] += 1  #pana la i sunt frecv[i] elem
 
-    for i in range(1,10):
-        frecv[i] += frecv[i-1]
+    for i in range(1, 10):
+        frecv[i] += frecv[i - 1]
 
-    for i in range(n-1, -1, -1):
-        index = (v[i]//exp)%10
-        rez[frecv[index]-1] = v[i] #pune elem in poz coresp cifrei lui
+    for i in range(n - 1, -1, -1):
+        index = (v[i] // exp) % 10
+        rez[frecv[index] - 1] = v[i]  #pune elem in poz coresp cifrei lui
         frecv[index] -= 1
 
     return rez
@@ -128,6 +130,7 @@ def radix_sort(v):
         exp *= 10
 
     return v
+
 
 #generare vectori pt teste
 
@@ -170,6 +173,7 @@ def generare_vector(n, minim, maxim, tip):
 
     return v
 
+
 #masurare timp
 
 def masurare_timp(algoritm, v):
@@ -184,9 +188,10 @@ def masurare_timp(algoritm, v):
     durata = end_time - start_time
     return durata
 
+
 def raport():
     dimensiuni = [10, 100, 1000]
-    tipuri = ["random", "sortat", "invers", "constant", "valori_mici", "un_element","gol"]
+    tipuri = ["random", "sortat", "invers", "constant", "valori_mici", "un_element", "gol"]
 
     algoritmi = [
         ("Bubble", bubble_sort),
@@ -197,18 +202,59 @@ def raport():
     ]
 
     for n in dimensiuni:
-        print("\nDimensiune vector:", n)
+        print("\n------------------------------------------")
+        print("Dimensiune:", n)
+
+        bubble_win = 0
+        merge_win = 0
+        quick_win = 0
+        heap_win = 0
+        radix_win = 0
 
         for tip in tipuri:
             v = generare_vector(n, 0, 100000, tip)
             print("\nTip vector:", tip)
 
-            for nume, alg in algoritmi:
-                try:
-                    t = masurare_timp(alg, v)
-                    print(nume, "->", t)
-                except:
-                    print(nume, "-> eroare")
+            timp_minim = masurare_timp(algoritmi[0][1], v)
+            cel_mai_bun = algoritmi[0][0]
 
+            for nume, alg in algoritmi:
+                t = masurare_timp(alg, v)
+                print(nume, "->", t)
+
+                if t < timp_minim:
+                    timp_minim = t
+                    cel_mai_bun = nume
+
+            print("Cel mai rapid:", cel_mai_bun)
+
+            if cel_mai_bun == "Bubble":
+                bubble_win += 1
+            elif cel_mai_bun == "Merge":
+                merge_win += 1
+            elif cel_mai_bun == "Quick":
+                quick_win += 1
+            elif cel_mai_bun == "Heap":
+                heap_win += 1
+            elif cel_mai_bun == "Radix":
+                radix_win += 1
+
+        maxim = bubble_win
+        best = "Bubble"
+
+        if merge_win > maxim:
+            maxim = merge_win
+            best = "Merge"
+        if quick_win > maxim:
+            maxim = quick_win
+            best = "Quick"
+        if heap_win > maxim:
+            maxim = heap_win
+            best = "Heap"
+        if radix_win > maxim:
+            maxim = radix_win
+            best = "Radix"
+
+        print("\n>>> Cel mai bun algoritm pentru dimensiunea", n, "este:", best)
 
 raport()

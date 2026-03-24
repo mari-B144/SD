@@ -1,5 +1,5 @@
 #1
-Bubble sort e cel mai lent pt vectori mari, dar foarte rapid pt un vector deja sortat
+bubble sort e cel mai lent pt vectori mari, dar foarte rapid pt un vector deja sortat
 
 #2
 quick sort este cel mai rapid overall => quick < merge < heap
